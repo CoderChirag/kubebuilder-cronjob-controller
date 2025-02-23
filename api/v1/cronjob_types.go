@@ -67,8 +67,6 @@ type CronJobSpec struct {
 	Suspend *bool `json:"suspend,omitempty"`
 
 	// Specifies the job that will be created when executing a CronJob.
-	// +kubebuilder:pruning:PreserveUnknownFields
-	// +kubebuilder:validation:Schemaless
 	JobTemplate batchv1.JobTemplateSpec `json:"jobTemplate"`
 
 	// The number of successful finished jobs to retain. Default is 3.
