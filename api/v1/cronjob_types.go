@@ -69,13 +69,16 @@ type CronJobSpec struct {
 	// Specifies the job that will be created when executing a CronJob.
 	JobTemplate batchv1.JobTemplateSpec `json:"jobTemplate"`
 
-	// The number of successful finished jobs to retain.
+	// The number of successful finished jobs to retain. Default is 3.
 	// This is a pointer to distinguish between explicit zero and not specified.
 	// +optional
+	// +kubebuilder:default=3
 	SuccessfulJobHistoryLimit *int32 `json:"successfulJobHistoryLimit,omitempty"`
 
-	// The number of failed finished jobs to retain.
+	// The number of failed finished jobs to retain. Default is 1.
 	// This is a pointer to distinguish between explicit zero and not specified.
+	// +optional
+	// +kubebuilder:default=1
 	FailedJobHistoryLimit *int32 `json:"failedJobHistoryLimit,omitempty"`
 }
 
@@ -101,6 +104,20 @@ type CronJob struct {
 	Spec   CronJobSpec   `json:"spec,omitempty"`
 	Status CronJobStatus `json:"status,omitempty"`
 }
+
+func (c *CronJob) GetFailedJobHistoryLimit() int32 {
+	if c.Spec.FailedJobHistoryLimit == nil {
+		return 1
+	}
+	return *c.Spec.FailedJobHistoryLimit
+} 
+
+func (c *CronJob) GetSuccessfulJobHistoryLimit() int32 {
+	if c.Spec.SuccessfulJobHistoryLimit == nil {
+		return 3
+	}
+	return *c.Spec.SuccessfulJobHistoryLimit
+} 
 
 // +kubebuilder:object:root=true
 

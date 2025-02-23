@@ -52,8 +52,9 @@ spec:
                 - Replace
                 type: string
               failedJobHistoryLimit:
+                default: 1
                 description: |-
-                  The number of failed finished jobs to retain.
+                  The number of failed finished jobs to retain. Default is 1.
                   This is a pointer to distinguish between explicit zero and not specified.
                 format: int32
                 type: integer
@@ -8641,8 +8642,9 @@ spec:
                 format: int64
                 type: integer
               successfulJobHistoryLimit:
+                default: 3
                 description: |-
-                  The number of successful finished jobs to retain.
+                  The number of successful finished jobs to retain. Default is 3.
                   This is a pointer to distinguish between explicit zero and not specified.
                 format: int32
                 type: integer
