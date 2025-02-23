@@ -98,13 +98,13 @@ func (in *CronJobSpec) DeepCopyInto(out *CronJobSpec) {
 		**out = **in
 	}
 	in.JobTemplate.DeepCopyInto(&out.JobTemplate)
-	if in.SuccessfulJobHistoryLimit != nil {
-		in, out := &in.SuccessfulJobHistoryLimit, &out.SuccessfulJobHistoryLimit
+	if in.SuccessfulJobsHistoryLimit != nil {
+		in, out := &in.SuccessfulJobsHistoryLimit, &out.SuccessfulJobsHistoryLimit
 		*out = new(int32)
 		**out = **in
 	}
-	if in.FailedJobHistoryLimit != nil {
-		in, out := &in.FailedJobHistoryLimit, &out.FailedJobHistoryLimit
+	if in.FailedJobsHistoryLimit != nil {
+		in, out := &in.FailedJobsHistoryLimit, &out.FailedJobsHistoryLimit
 		*out = new(int32)
 		**out = **in
 	}

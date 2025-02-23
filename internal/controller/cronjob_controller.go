@@ -34,7 +34,10 @@ import (
 	batchv1 "coderchirag.github.io/cronjob/api/v1"
 )
 
-// Clock
+/*
+We'll mock out the clock to make it easier to jump around in time while testing,
+the "real" clock just calls `time.Now`.
+*/
 type realClock struct{}
 
 func (realClock) Now() time.Time {
@@ -227,11 +230,13 @@ func (r *CronJobReconciler) updateCronjobStatus(ctx context.Context, log *logr.L
 		}
 		cronJob.Status.Active = append(cronJob.Status.Active, *jobRef)
 	}
+	log.V(1).Info("test")
 
 	if err := r.Status().Update(ctx, cronJob); err != nil {
 		log.Error(err, "unable to update CronJob status")
 		return err
 	}
+	log.V(1).Info("test22")
 
 	return nil
 }

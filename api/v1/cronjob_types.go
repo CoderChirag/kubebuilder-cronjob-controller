@@ -73,13 +73,13 @@ type CronJobSpec struct {
 	// This is a pointer to distinguish between explicit zero and not specified.
 	// +optional
 	// +kubebuilder:default=3
-	SuccessfulJobHistoryLimit *int32 `json:"successfulJobHistoryLimit,omitempty"`
+	SuccessfulJobsHistoryLimit *int32 `json:"successfulJobHistoryLimit,omitempty"`
 
 	// The number of failed finished jobs to retain. Default is 1.
 	// This is a pointer to distinguish between explicit zero and not specified.
 	// +optional
 	// +kubebuilder:default=1
-	FailedJobHistoryLimit *int32 `json:"failedJobHistoryLimit,omitempty"`
+	FailedJobsHistoryLimit *int32 `json:"failedJobHistoryLimit,omitempty"`
 }
 
 // CronJobStatus defines the observed state of CronJob.
@@ -106,17 +106,17 @@ type CronJob struct {
 }
 
 func (c *CronJob) GetFailedJobHistoryLimit() int32 {
-	if c.Spec.FailedJobHistoryLimit == nil {
+	if c.Spec.FailedJobsHistoryLimit == nil {
 		return 1
 	}
-	return *c.Spec.FailedJobHistoryLimit
+	return *c.Spec.FailedJobsHistoryLimit
 }
 
 func (c *CronJob) GetSuccessfulJobHistoryLimit() int32 {
-	if c.Spec.SuccessfulJobHistoryLimit == nil {
+	if c.Spec.SuccessfulJobsHistoryLimit == nil {
 		return 3
 	}
-	return *c.Spec.SuccessfulJobHistoryLimit
+	return *c.Spec.SuccessfulJobsHistoryLimit
 }
 
 // +kubebuilder:object:root=true

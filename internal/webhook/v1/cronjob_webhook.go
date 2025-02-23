@@ -92,14 +92,14 @@ func (d *CronJobCustomDefaulter) applyDefaults(cronJob *batchv1.CronJob) {
 		*cronJob.Spec.Suspend = d.DefaultSuspend
 	}
 
-	if cronJob.Spec.FailedJobHistoryLimit == nil {
-		cronJob.Spec.FailedJobHistoryLimit = new(int32)
-		*cronJob.Spec.FailedJobHistoryLimit = d.DefaultFailedJobHistoryLimit
+	if cronJob.Spec.FailedJobsHistoryLimit == nil {
+		cronJob.Spec.FailedJobsHistoryLimit = new(int32)
+		*cronJob.Spec.FailedJobsHistoryLimit = d.DefaultFailedJobHistoryLimit
 	}
 
-	if cronJob.Spec.SuccessfulJobHistoryLimit == nil {
-		cronJob.Spec.SuccessfulJobHistoryLimit = new(int32)
-		*cronJob.Spec.SuccessfulJobHistoryLimit = d.DefaultSuccessfulJobHistoryLimit
+	if cronJob.Spec.SuccessfulJobsHistoryLimit == nil {
+		cronJob.Spec.SuccessfulJobsHistoryLimit = new(int32)
+		*cronJob.Spec.SuccessfulJobsHistoryLimit = d.DefaultSuccessfulJobHistoryLimit
 	}
 }
 
@@ -174,7 +174,7 @@ func validateCronJobSpec(cronJob *batchv1.CronJob) *field.Error {
 }
 
 func validateScheduleFormat(schedule string, fldPath *field.Path) *field.Error {
-	if _, err := cron.Parse(schedule); err != nil {
+	if _, err := cron.ParseStandard(schedule); err != nil {
 		return field.Invalid(fldPath, schedule, err.Error())
 	}
 	return nil

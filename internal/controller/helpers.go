@@ -61,7 +61,7 @@ func categorizeJobsAndGetMostRecentStartTime(log *logr.Logger, jobs *kbatchv1.Jo
 }
 
 func getNextSchedule(cronJob *batchv1.CronJob, now time.Time) (lastMissed time.Time, next time.Time, err error) {
-	sched, err := cron.Parse(cronJob.Spec.Schedule)
+	sched, err := cron.ParseStandard(cronJob.Spec.Schedule)
 	if err != nil {
 		return time.Time{}, time.Time{}, fmt.Errorf("unparseable schedule %q: %v", cronJob.Spec.Schedule, err)
 	}
