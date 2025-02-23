@@ -44,14 +44,13 @@ func SetupCronJobWebhookWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewWebhookManagedBy(mgr).For(&batchv1.CronJob{}).
 		WithValidator(&CronJobCustomValidator{}).
 		WithDefaulter(&CronJobCustomDefaulter{
-			DefaultConcurrencyPolicy: batchv1.AllowConcurrent,
-			DefaultSuspend: false,
+			DefaultConcurrencyPolicy:         batchv1.AllowConcurrent,
+			DefaultSuspend:                   false,
 			DefaultSuccessfulJobHistoryLimit: 3,
-			DefaultFailedJobHistoryLimit: 1,
+			DefaultFailedJobHistoryLimit:     1,
 		}).
 		Complete()
 }
-
 
 // +kubebuilder:webhook:path=/mutate-batch-coderchirag-github-io-v1-cronjob,mutating=true,failurePolicy=fail,sideEffects=None,groups=batch.coderchirag.github.io,resources=cronjobs,verbs=create;update,versions=v1,name=mcronjob-v1.kb.io,admissionReviewVersions=v1
 
@@ -61,10 +60,10 @@ func SetupCronJobWebhookWithManager(mgr ctrl.Manager) error {
 // NOTE: The +kubebuilder:object:generate=false marker prevents controller-gen from generating DeepCopy methods,
 // as it is used only for temporary operations and does not need to be deeply copied.
 type CronJobCustomDefaulter struct {
-	DefaultConcurrencyPolicy batchv1.ConcurrencyPolicy
-	DefaultSuspend bool
+	DefaultConcurrencyPolicy         batchv1.ConcurrencyPolicy
+	DefaultSuspend                   bool
 	DefaultSuccessfulJobHistoryLimit int32
-	DefaultFailedJobHistoryLimit int32
+	DefaultFailedJobHistoryLimit     int32
 }
 
 var _ webhook.CustomDefaulter = &CronJobCustomDefaulter{}
@@ -147,7 +146,6 @@ func (v *CronJobCustomValidator) ValidateDelete(ctx context.Context, obj runtime
 		return nil, fmt.Errorf("expected a CronJob object but got %T", obj)
 	}
 	cronjoblog.Info("Validation for CronJob upon deletion", "name", cronjob.GetName())
-
 
 	return nil, nil
 }

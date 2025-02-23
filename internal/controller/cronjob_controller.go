@@ -34,10 +34,10 @@ import (
 	batchv1 "coderchirag.github.io/cronjob/api/v1"
 )
 
-//Clock
-type realClock struct {}
+// Clock
+type realClock struct{}
 
-func(realClock) Now() time.Time {
+func (realClock) Now() time.Time {
 	return time.Now()
 }
 
@@ -80,7 +80,7 @@ func (r *CronJobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	var childJobs kbatchv1.JobList
 	var activeJobs, failedJobs, successfulJobs []*kbatchv1.Job
 	var mostRecentTime *time.Time
-	
+
 	// 1. Load the CronJob by name
 	if err := r.Get(ctx, req.NamespacedName, &cronJob); err != nil {
 		log.Error(err, "unable to fetch CronJob")
@@ -121,7 +121,7 @@ func (r *CronJobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		// fixes the schedule, so don't return an error
 		return ctrl.Result{}, nil
 	}
-	
+
 	scheduledResult := ctrl.Result{RequeueAfter: nextRun.Sub(r.Now())} // save this so we can re-use it elsewhere
 	log = log.WithValues("now", r.Now(), "next run", nextRun)
 
@@ -178,7 +178,7 @@ func (r *CronJobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 
 var (
 	jobOwnerKey = ".metadata.controller"
-	apiGVStr = batchv1.GroupVersion.String()
+	apiGVStr    = batchv1.GroupVersion.String()
 )
 
 // SetupWithManager sets up the controller with the Manager.
@@ -213,7 +213,7 @@ func (r *CronJobReconciler) SetupWithManager(mgr ctrl.Manager) error {
 func (r *CronJobReconciler) updateCronjobStatus(ctx context.Context, log *logr.Logger, cronJob *batchv1.CronJob, mostRecentTime *time.Time, activeJobs []*kbatchv1.Job) error {
 	if mostRecentTime != nil {
 		cronJob.Status.LastScheduleTime = &metav1.Time{Time: *mostRecentTime}
-	}else {
+	} else {
 		cronJob.Status.LastScheduleTime = nil
 	}
 
@@ -257,7 +257,7 @@ func (r *CronJobReconciler) cleanupJobs(ctx context.Context, log *logr.Logger, c
 		}
 		if err := r.Delete(ctx, failedJob, client.PropagationPolicy(metav1.DeletePropagationBackground)); client.IgnoreNotFound(err) != nil {
 			log.Error(err, "unable to delete old failed job", "job", failedJob)
-		}else{
+		} else {
 			log.V(0).Info("deleted old failed job", "job", failedJob)
 		}
 	}
@@ -267,37 +267,37 @@ func (r *CronJobReconciler) cleanupJobs(ctx context.Context, log *logr.Logger, c
 		}
 		if err := r.Delete(ctx, successfulJob, client.PropagationPolicy(metav1.DeletePropagationBackground)); client.IgnoreNotFound(err) != nil {
 			log.Error(err, "unable to delete old successful job", "job", successfulJob)
-		}else{
+		} else {
 			log.V(0).Info("deleted old successful job", "job", successfulJob)
 		}
 	}
 }
 
 func (r *CronJobReconciler) constructJobFromCronJob(cronJob *batchv1.CronJob, scheduledTime time.Time) (*kbatchv1.Job, error) {
-	  // We want job names for a given nominal start time to have a deterministic name to avoid the same job being created twice
-		name := fmt.Sprintf("%s-%d", cronJob.Name, scheduledTime.Unix())
+	// We want job names for a given nominal start time to have a deterministic name to avoid the same job being created twice
+	name := fmt.Sprintf("%s-%d", cronJob.Name, scheduledTime.Unix())
 
-		job := &kbatchv1.Job{
-			ObjectMeta: metav1.ObjectMeta{
-				Labels: make(map[string]string),
-				Annotations: make(map[string]string),
-				Name: name,
-				Namespace: cronJob.Namespace,
-			},
-			Spec: *cronJob.Spec.JobTemplate.Spec.DeepCopy(),
-		}
+	job := &kbatchv1.Job{
+		ObjectMeta: metav1.ObjectMeta{
+			Labels:      make(map[string]string),
+			Annotations: make(map[string]string),
+			Name:        name,
+			Namespace:   cronJob.Namespace,
+		},
+		Spec: *cronJob.Spec.JobTemplate.Spec.DeepCopy(),
+	}
 
-		for k, v := range cronJob.Spec.JobTemplate.Labels {
-			job.Labels[k] = v
-		}
-		for k, v := range cronJob.Spec.JobTemplate.Annotations {
-			job.Annotations[k] = v
-		}
-		job.Annotations[scheduledTimeAnnotation] = scheduledTime.Format(time.RFC3339)
+	for k, v := range cronJob.Spec.JobTemplate.Labels {
+		job.Labels[k] = v
+	}
+	for k, v := range cronJob.Spec.JobTemplate.Annotations {
+		job.Annotations[k] = v
+	}
+	job.Annotations[scheduledTimeAnnotation] = scheduledTime.Format(time.RFC3339)
 
-		if err := ctrl.SetControllerReference(cronJob, job, r.Scheme); err != nil {
-			return nil, err
-		}
+	if err := ctrl.SetControllerReference(cronJob, job, r.Scheme); err != nil {
+		return nil, err
+	}
 
-		return job, nil
+	return job, nil
 }

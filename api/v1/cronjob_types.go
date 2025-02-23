@@ -67,6 +67,8 @@ type CronJobSpec struct {
 	Suspend *bool `json:"suspend,omitempty"`
 
 	// Specifies the job that will be created when executing a CronJob.
+	// +kubebuilder:pruning:PreserveUnknownFields
+	// +kubebuilder:validation:Schemaless
 	JobTemplate batchv1.JobTemplateSpec `json:"jobTemplate"`
 
 	// The number of successful finished jobs to retain. Default is 3.
@@ -110,14 +112,14 @@ func (c *CronJob) GetFailedJobHistoryLimit() int32 {
 		return 1
 	}
 	return *c.Spec.FailedJobHistoryLimit
-} 
+}
 
 func (c *CronJob) GetSuccessfulJobHistoryLimit() int32 {
 	if c.Spec.SuccessfulJobHistoryLimit == nil {
 		return 3
 	}
 	return *c.Spec.SuccessfulJobHistoryLimit
-} 
+}
 
 // +kubebuilder:object:root=true
 

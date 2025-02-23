@@ -71,7 +71,7 @@ func getNextSchedule(cronJob *batchv1.CronJob, now time.Time) (lastMissed time.T
 	var earliestTime time.Time
 	if cronJob.Status.LastScheduleTime != nil {
 		earliestTime = cronJob.Status.LastScheduleTime.Time
-	}else {
+	} else {
 		earliestTime = cronJob.ObjectMeta.CreationTimestamp.Time
 	}
 
@@ -91,7 +91,7 @@ func getNextSchedule(cronJob *batchv1.CronJob, now time.Time) (lastMissed time.T
 	}
 
 	starts := 0
-	for t:=sched.Next(earliestTime); !t.After(now); t=sched.Next(t) {
+	for t := sched.Next(earliestTime); !t.After(now); t = sched.Next(t) {
 		lastMissed = t
 		// An object might miss several starts. For example, if
 		// controller gets wedged on Friday at 5:01pm when everyone has
@@ -100,7 +100,7 @@ func getNextSchedule(cronJob *batchv1.CronJob, now time.Time) (lastMissed time.T
 		// jobs, more than 80 of them for one hourly scheduledJob, should
 		// all start running with no further intervention (if the scheduledJob
 		// allows concurrency and late starts).
-		
+
 		// However, if there is a bug somewhere, or incorrect clock
 		// on controller's server or apiservers (for setting creationTimestamp)
 		// then there could be so many missed start times (it could be off
